@@ -3,6 +3,7 @@ package com.skillspace.teacherservice.security;
 
 
 import com.skillspace.teacherservice.service.JwtService;
+import com.skillspace.teacherservice.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,11 @@ import java.io.PrintWriter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserService userService;
 
-    JwtAuthenticationFilter(JwtService jwtService) {
+    JwtAuthenticationFilter(JwtService jwtService, UserService userService) {
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
 
@@ -55,7 +58,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         UsernamePasswordAuthenticationToken authToken =
                                 new UsernamePasswordAuthenticationToken(username, null, null);
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                        filterChain.doFilter(request, response);
+
+                        if(userService.allowHome()){
+                            filterChain.doFilter(request, response);
+                        }
+                        else{
+                            response.setContentType("application/json");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            PrintWriter writer = response.getWriter();
+                            writer.print("""
+                                    {
+                                        "emailStatus":"""+userService.emailStatus()+"""
+                                        ,"profileStatus":"""+userService.profileStatus()+"""
+                                    }
+                                    """);
+                        }
+
+
 
                     }
                     else{
