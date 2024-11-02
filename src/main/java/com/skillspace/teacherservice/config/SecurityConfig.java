@@ -23,14 +23,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http
+                .addFilterAt(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .sessionManagement(session -> session.sessionFixation().none());
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session
+                        .sessionFixation().none());
 
         return http.build();
-
     }
 }
