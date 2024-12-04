@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         }
                         else{
                             response.setContentType("application/json");
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT);
                             PrintWriter writer = response.getWriter();
                             writer.print("""
                                     {
